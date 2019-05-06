@@ -27,20 +27,6 @@
 #include "SpellInfo.h"
 #include "SpellMgr.h"
 
-void UnitAI::AttackStart(Unit* victim)
-{
-    if (victim && me->Attack(victim, true))
-    {
-        // Clear distracted state on attacking
-        if (me->HasUnitState(UNIT_STATE_DISTRACTED))
-        {
-            me->ClearUnitState(UNIT_STATE_DISTRACTED);
-            me->GetMotionMaster()->Clear();
-        }
-        me->GetMotionMaster()->MoveChase(victim);
-    }
-}
-
 void UnitAI::InitializeAI()
 {
     if (!me->isDead())
@@ -51,12 +37,6 @@ void UnitAI::OnCharmed(bool isNew)
 {
     if (!isNew)
         me->ScheduleAIChange();
-}
-
-void UnitAI::AttackStartCaster(Unit* victim, float dist)
-{
-    if (victim && me->Attack(victim, false))
-        me->GetMotionMaster()->MoveChase(victim, dist);
 }
 
 void UnitAI::DoMeleeAttackIfReady()
@@ -111,10 +91,20 @@ void UnitAI::SelectTargetList(std::list<Unit*>& targetList, uint32 num, SelectAg
     SelectTargetList(targetList, num, targetType, offset, DefaultTargetSelector(me, dist, playerOnly, withTank, aura));
 }
 
-float UnitAI::DoGetSpellMaxRange(uint32 spellId, bool positive)
+void UnitAI::AttackStart(Unit* victim, bool meleeAttack /*= true*/, bool chaseTarget /*= true*/, float chaseDistance /*= 0.f*/)
 {
-    SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
-    return spellInfo ? spellInfo->GetMaxRange(positive) : 0;
+    if (victim && me->Attack(victim, meleeAttack))
+    {
+        // Clear distracted state on attacking
+        if (me->HasUnitState(UNIT_STATE_DISTRACTED))
+        {
+            me->ClearUnitState(UNIT_STATE_DISTRACTED);
+            me->GetMotionMaster()->Clear();
+        }
+
+        if (chaseTarget)
+            me->GetMotionMaster()->MoveChase(victim, chaseDistance);
+    }
 }
 
 void UnitAI::DoCast(uint32 spellId)
@@ -179,6 +169,12 @@ void UnitAI::DoCastVictim(uint32 spellId, CastSpellExtraArgs const& args)
 {
     if (Unit* victim = me->GetVictim())
         DoCast(victim, spellId, args);
+}
+
+float UnitAI::DoGetSpellMaxRange(uint32 spellId, bool positive)
+{
+    SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
+    return spellInfo ? spellInfo->GetMaxRange(positive) : 0;
 }
 
 #define UPDATE_TARGET(a) {if (AIInfo->target<a) AIInfo->target=a;}

@@ -100,6 +100,7 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         bool CanSwim() const override { return GetMovementTemplate().IsSwimAllowed() || IsPet(); }
         bool CanFly()  const override { return GetMovementTemplate().IsFlightAllowed(); }
         bool CanHover() const { return GetMovementTemplate().Ground == CreatureGroundMovementType::Hover; }
+        bool IsTemplateRooted() const { GetMovementTemplate().IsRooted(); }
 
         MovementGeneratorType GetDefaultMovementType() const override { return m_defaultMovementType; }
         void SetDefaultMovementType(MovementGeneratorType mgt) { m_defaultMovementType = mgt; }

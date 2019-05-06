@@ -31,15 +31,15 @@ class TC_GAME_API PetAI : public CreatureAI
 {
     public:
 
-        explicit PetAI(Creature* c);
+        explicit PetAI(Creature* creature);
 
-        void UpdateAI(uint32) override;
+        void UpdateAI(uint32 diff) override;
         static int32 Permissible(Creature const* creature);
 
         void KilledUnit(Unit* /*victim*/) override;
-        void AttackStart(Unit* target) override; // only start attacking if not attacking something else already
+        void AttackStart(Unit* target, bool meleeAttack = true, bool chaseTarget = true, float chaseDistance = 0.f) override; // only start attacking if not attacking something else already
         void _AttackStart(Unit* target); // always start attacking if possible
-        void MovementInform(uint32 moveType, uint32 data) override;
+        void MovementInform(uint32 type, uint32 id) override;
         void OwnerAttackedBy(Unit* attacker) override;
         void OwnerAttacked(Unit* target) override;
         void DamageTaken(Unit* attacker, uint32& /*damage*/) override { AttackStart(attacker); }
@@ -53,19 +53,18 @@ class TC_GAME_API PetAI : public CreatureAI
         void EnterEvadeMode(EvadeReason /*why*/) override { } // For fleeing, pets don't use this type of Evade mechanic
 
     private:
-        bool _needToStop(void);
-        void _stopAttack(void);
-
+        bool NeedToStop();
+        void StopAttack();
         void UpdateAllies();
-
-        TimeTracker i_tracker;
-        GuidSet m_AllySet;
-        uint32 m_updateAlliesTimer;
-
         Unit* SelectNextTarget(bool allowAutoSelect) const;
         void HandleReturnMovement();
         void DoAttack(Unit* target, bool chase);
         bool CanAttack(Unit* target);
+        // Quick access to set all flags to FALSE
         void ClearCharmInfoFlags();
+
+        TimeTracker _tracker;
+        GuidSet _allySet;
+        uint32 _updateAlliesTimer;
 };
 #endif

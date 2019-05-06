@@ -486,7 +486,7 @@ class TC_GAME_API WorldObject : public Object, public WorldLocation
         bool IsPermanentWorldObject() const { return m_isWorldObject; }
         bool IsWorldObject() const;
 
-        uint32  LastUsedScriptID;
+        uint32 LastUsedScriptID;
 
         // Transports
         Transport* GetTransport() const { return m_transport; }

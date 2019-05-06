@@ -135,11 +135,9 @@ class TC_GAME_API UnitAI
         explicit UnitAI(Unit* unit) : me(unit) { }
         virtual ~UnitAI() { }
 
-        virtual bool CanAIAttack(Unit const* /*target*/) const { return true; }
-        virtual void AttackStart(Unit* /*target*/);
-        virtual void UpdateAI(uint32 diff) = 0;
-
         virtual void InitializeAI();
+
+        virtual void UpdateAI(uint32 diff) = 0;
 
         virtual void Reset() { }
 
@@ -279,6 +277,9 @@ class TC_GAME_API UnitAI
                 targetList.resize(num);
         }
 
+        virtual bool CanAIAttack(Unit const* /*target*/) const { return true; }
+        virtual void AttackStart(Unit* target, bool meleeAttack = true, bool chaseTarget = true, float chaseDistance = 0.f);
+
         // Called when the unit enters combat
         // (NOTE: Creature engage logic should NOT be here, but in JustEngagedWith, which happens once threat is established!)
         virtual void JustEnteredCombat(Unit* /*who*/) { }
@@ -305,8 +306,6 @@ class TC_GAME_API UnitAI
         /// Called when a spell is interrupted by Spell::EffectInterruptCast
         /// Use to reschedule next planned cast of spell.
         virtual void SpellInterrupted(uint32 /*spellId*/, uint32 /*unTimeMs*/) { }
-
-        void AttackStartCaster(Unit* victim, float dist);
 
         void DoCast(uint32 spellId);
         void DoCast(Unit* victim, uint32 spellId, CastSpellExtraArgs const& args = {});
