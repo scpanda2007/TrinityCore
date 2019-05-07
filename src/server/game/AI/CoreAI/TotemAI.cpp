@@ -36,7 +36,7 @@ int32 TotemAI::Permissible(Creature const* creature)
 
 TotemAI::TotemAI(Creature* creature) : CreatureAI(creature)
 {
-    ASSERT(creature->IsTotem(), "TotemAI: AI assigned to a no-totem creature (%s)!", creature->GetGUID().ToString());
+    ASSERT(creature->IsTotem(), "TotemAI: AI assigned to a no-totem creature (%s)!", creature->GetGUID().ToString().c_str());
 }
 
 void TotemAI::EnterEvadeMode(EvadeReason /*why*/)
