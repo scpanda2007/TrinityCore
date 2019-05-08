@@ -91,9 +91,9 @@ void UnitAI::SelectTargetList(std::list<Unit*>& targetList, uint32 num, SelectAg
     SelectTargetList(targetList, num, targetType, offset, DefaultTargetSelector(me, dist, playerOnly, withTank, aura));
 }
 
-void UnitAI::AttackStart(Unit* victim, bool meleeAttack /*= true*/, bool chaseTarget /*= true*/, float chaseDistance /*= 0.f*/)
+void UnitAI::AttackStart(Unit* target, bool meleeAttack /*= true*/, bool chaseTarget /*= true*/, float chaseDistance /*= 0.f*/)
 {
-    if (victim && me->Attack(victim, meleeAttack))
+    if (target && me->Attack(target, meleeAttack))
     {
         // Clear distracted state on attacking
         if (me->HasUnitState(UNIT_STATE_DISTRACTED))
@@ -103,7 +103,7 @@ void UnitAI::AttackStart(Unit* victim, bool meleeAttack /*= true*/, bool chaseTa
         }
 
         if (chaseTarget)
-            me->GetMotionMaster()->MoveChase(victim, chaseDistance);
+            me->GetMotionMaster()->MoveChase(target, chaseDistance);
     }
 }
 
