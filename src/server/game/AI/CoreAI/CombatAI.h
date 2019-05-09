@@ -27,10 +27,11 @@ class Creature;
 class TC_GAME_API AggressorAI : public CreatureAI
 {
     public:
+        static int32 Permissible(Creature const* creature);
+
         explicit AggressorAI(Creature* creature) : CreatureAI(creature) { }
 
         void UpdateAI(uint32) override;
-        static int32 Permissible(Creature const* creature);
 };
 
 typedef std::vector<uint32> SpellVct;
@@ -58,6 +59,7 @@ class TC_GAME_API CasterAI : public CombatAI
 {
     public:
         explicit CasterAI(Creature* creature) : CombatAI(creature) { _attackDistance = MELEE_RANGE; }
+
         void InitializeAI() override;
         void AttackStart(Unit* target, bool, bool, float) override { CombatAI::AttackStart(target, false, true, _attackDistance); }
         void UpdateAI(uint32 diff) override;
@@ -70,6 +72,7 @@ struct TC_GAME_API ArcherAI : public CreatureAI
 {
     public:
         explicit ArcherAI(Creature* creature);
+
         void AttackStart(Unit* target, bool, bool, float) override { CreatureAI::AttackStart(target, true, true, me->m_CombatDistance); }
         void UpdateAI(uint32 diff) override;
 
@@ -84,6 +87,7 @@ struct TC_GAME_API TurretAI : public CreatureAI
 {
     public:
         explicit TurretAI(Creature* creature);
+
         bool CanAIAttack(Unit const* who) const override;
         void AttackStart(Unit* target, bool, bool, float) override { CreatureAI::AttackStart(target, false, false); }
         void UpdateAI(uint32 diff) override;

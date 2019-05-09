@@ -30,12 +30,11 @@ typedef std::vector<std::pair<Unit*, Spell*>> TargetSpellList;
 class TC_GAME_API PetAI : public CreatureAI
 {
     public:
+        static int32 Permissible(Creature const* creature);
 
         explicit PetAI(Creature* creature);
 
         void UpdateAI(uint32 diff) override;
-        static int32 Permissible(Creature const* creature);
-
         void KilledUnit(Unit* /*victim*/) override;
         void AttackStart(Unit* target, bool meleeAttack = true, bool chaseTarget = true, float chaseDistance = 0.f) override; // only start attacking if not attacking something else already
         void _AttackStart(Unit* target); // always start attacking if possible

@@ -42,7 +42,6 @@ class TC_GAME_API PossessedAI : public CreatureAI
         void AttackStart(Unit* target, bool meleeAttack = true, bool chaseTarget = true, float chaseDistance = 0.f) override;
         void UpdateAI(uint32 diff) override;
         void EnterEvadeMode(EvadeReason /*why*/) override { }
-
         void JustDied(Unit* killer) override;
         void KilledUnit(Unit* victim) override;
 
@@ -78,6 +77,7 @@ class TC_GAME_API TriggerAI : public NullCreatureAI
 {
     public:
         explicit TriggerAI(Creature* creature) : NullCreatureAI(creature) { }
+
         void IsSummonedBy(Unit* summoner) override;
 
         static int32 Permissible(Creature const* creature);

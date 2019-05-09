@@ -27,15 +27,14 @@ class Totem;
 class TC_GAME_API TotemAI : public CreatureAI
 {
     public:
+        static int32 Permissible(Creature const* creature);
+
         explicit TotemAI(Creature* creature);
 
         void MoveInLineOfSight(Unit* /*who*/) override { }
         void AttackStart(Unit* target, bool meleeAttack = true, bool chaseTarget = true, float chaseDistance = 0.f) override;
         void EnterEvadeMode(EvadeReason /*why*/) override;
         void UpdateAI(uint32 diff) override;
-
-        static int32 Permissible(Creature const* creature);
-
     private:
         ObjectGuid _victimGUID;
 };
