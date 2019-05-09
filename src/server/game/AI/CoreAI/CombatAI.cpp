@@ -205,10 +205,7 @@ void ArcherAI::UpdateAI(uint32 diff)
         if (me->GetVictim()->IsFlying())
         {
             if (me->HasUnitState(UNIT_STATE_CHASE))
-            {
                 me->GetMotionMaster()->Remove(CHASE_MOTION_TYPE);
-                me->GetMotionMaster()->MoveIdle();
-            }
         }
         else if (!me->HasUnitState(UNIT_STATE_CHASE))
             me->GetMotionMaster()->MoveChase(me->GetVictim(), me->m_CombatDistance);

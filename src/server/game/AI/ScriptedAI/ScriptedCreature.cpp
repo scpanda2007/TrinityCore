@@ -50,14 +50,12 @@ void SummonList::Despawn(Creature const* summon)
     _storage.remove(summon->GetGUID());
 }
 
-void SummonList::DoZoneInCombat(uint32 entry)
+void SummonList::DoZoneInCombat(uint32 entry /*= 0*/)
 {
-    for (StorageType::iterator itr = _storage.begin(); itr != _storage.end();)
+    for (auto const& guid : _storage)
     {
-        Creature* summon = ObjectAccessor::GetCreature(*_me, *itr);
-        ++itr;
-
-        // Access to summon, AI enabled, entry is the same (if provided)
+        // Access summon, AI enabled, entry is the same (if provided)
+        Creature* summon = ObjectAccessor::GetCreature(*_me, guid);
         if (summon && summon->IsAIEnabled() && (!entry || summon->GetEntry() == entry))
             summon->AI()->DoZoneInCombat(nullptr);
     }
@@ -131,21 +129,12 @@ ScriptedAI::ScriptedAI(Creature* creature) : CreatureAI(creature), IsFleeing(fal
     _difficulty = Difficulty(me->GetMap()->GetSpawnMode());
 }
 
-void ScriptedAI::AttackStartNoMove(Unit* who)
-{
-    if (!who)
-        return;
-
-    if (me->Attack(who, true))
-        DoStartNoMovement(who);
-}
-
 void ScriptedAI::AttackStart(Unit* target, bool meleeAttack /*= true*/, bool chaseTarget /*= true*/, float chaseDistance /*= 0.f*/)
 {
-    if (IsCombatMovementAllowed())
-        CreatureAI::AttackStart(target);
+    if (IsCombatMovementAllowed() && chaseTarget)
+        CreatureAI::AttackStart(target, meleeAttack, true, chaseDistance);
     else
-        AttackStartNoMove(target);
+        CreatureAI::AttackStart(target, meleeAttack, false);
 }
 
 void ScriptedAI::UpdateAI(uint32 /*diff*/)
@@ -157,18 +146,15 @@ void ScriptedAI::UpdateAI(uint32 /*diff*/)
     DoMeleeAttackIfReady();
 }
 
-void ScriptedAI::DoStartMovement(Unit* victim, float distance, float angle)
+void ScriptedAI::DoStartMovement(Unit* target, float distance /* = 0.0f*/, float angle /* = 0.0f*/)
 {
-    if (victim)
-        me->GetMotionMaster()->MoveChase(victim, distance, angle);
+    if (target)
+        me->GetMotionMaster()->MoveChase(target, distance, angle);
 }
 
-void ScriptedAI::DoStartNoMovement(Unit* victim)
+void ScriptedAI::DoPauseMovement()
 {
-    if (!victim)
-        return;
-
-    me->GetMotionMaster()->MoveIdle();
+    me->PauseMovement(0, MOTION_SLOT_DEFAULT, true);
 }
 
 void ScriptedAI::DoStopAttack()
@@ -182,7 +168,6 @@ void ScriptedAI::DoCastSpell(Unit* target, SpellInfo const* spellInfo, bool trig
     if (!target || me->IsNonMeleeSpellCast(false))
         return;
 
-    me->StopMoving();
     me->CastSpell(target, spellInfo->Id, triggered ? TRIGGERED_FULL_MASK : TRIGGERED_NONE);
 }
 
@@ -447,14 +432,6 @@ void ScriptedAI::SetCombatMovement(bool allowMovement)
 {
     _isCombatMovementAllowed = allowMovement;
 }
-
-enum NPCs
-{
-    NPC_BROODLORD   = 12017,
-    NPC_VOID_REAVER = 19516,
-    NPC_JAN_ALAI    = 23578,
-    NPC_SARTHARION  = 28860
-};
 
 // BossAI - for instanced bosses
 BossAI::BossAI(Creature* creature, uint32 bossId) : ScriptedAI(creature), instance(creature->GetInstanceScript()), summons(creature), _bossId(bossId)

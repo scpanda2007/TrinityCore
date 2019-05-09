@@ -137,8 +137,6 @@ struct TC_GAME_API ScriptedAI : public CreatureAI
     // CreatureAI Functions
     // *************
 
-    void AttackStartNoMove(Unit* target);
-
     // Called at World update tick
     virtual void UpdateAI(uint32 diff) override;
 
@@ -163,8 +161,8 @@ struct TC_GAME_API ScriptedAI : public CreatureAI
     // Start movement toward victim
     void DoStartMovement(Unit* target, float distance = 0.0f, float angle = 0.0f);
 
-    // Start no movement on victim
-    void DoStartNoMovement(Unit* target);
+    // Pause current MOTION_SLOT_DEFAULT movement (Idle or Waypoint)
+    void DoPauseMovement();
 
     // Stop attack of current victim
     void DoStopAttack();

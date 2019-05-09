@@ -104,6 +104,8 @@ void UnitAI::AttackStart(Unit* target, bool meleeAttack /*= true*/, bool chaseTa
 
         if (chaseTarget)
             me->GetMotionMaster()->MoveChase(target, chaseDistance);
+        else
+            me->PauseMovement();
     }
 }
 
