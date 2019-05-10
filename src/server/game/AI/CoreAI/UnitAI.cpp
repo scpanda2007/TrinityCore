@@ -49,7 +49,7 @@ void UnitAI::DoMeleeAttackIfReady()
     if (!me->IsWithinMeleeRange(victim))
         return;
 
-    //Make sure our attack is ready and we aren't currently casting before checking distance
+    // Make sure our attack is ready and we aren't currently casting before checking distance
     if (me->isAttackReady())
     {
         me->AttackerStateUpdate(victim);
@@ -102,10 +102,11 @@ void UnitAI::AttackStart(Unit* target, bool meleeAttack /*= true*/, bool chaseTa
             me->GetMotionMaster()->Clear();
         }
 
+        me->GetMotionMaster()->Clear(MOTION_PRIORITY_NORMAL);
+        me->PauseMovement();
+
         if (chaseTarget)
             me->GetMotionMaster()->MoveChase(target, chaseDistance);
-        else
-            me->PauseMovement();
     }
 }
 
